@@ -1,14 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const weatherRoutes = require('./routes/weather');
 
 const app = express();
 app.use(cors());
-
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('Servidor Express funcionando');
-});
+app.use('/api/weather', weatherRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
