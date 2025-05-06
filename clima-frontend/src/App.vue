@@ -52,11 +52,12 @@ const weather = ref(null)
 const imagen = ref(null)
 const error1 = ref('')
 const error2 = ref('')
+const API_RENDER=import.meta.env.VITE_BACKEND_URL
 
 const fetchWeather = async () => {
   error1.value = ''
   try {
-    const res = await fetch(`http://localhost:3000/api/weather/${city.value}`)
+    const res = await fetch(`${API_RENDER}/api/weather/${city.value}`)
     if (!res.ok) throw new Error('Clima de la ciudad no encontrado')
     weather.value = await res.json()
   } catch (err) {
@@ -67,7 +68,7 @@ const fetchWeather = async () => {
 const fetchCity = async () => {
   error2.value = ''
   try {
-    const res = await fetch(`http://localhost:3000/api/city/${city.value}`)
+    const res = await fetch(`${API_RENDER}/api/city/${city.value}`)
     if (!res.ok) throw new Error('Imagen de la ciudad no encontrada')
     imagen.value = await res.json()
 
