@@ -1,24 +1,25 @@
 <template>
-  <div class="min-h-screen bg-blue-100 p-8 flex flex-col items-center">
-    <div :class="`p-8 flex flex-col items-center bg-gradient-to-br ${bgClass}`">
+  <div class="min-h-screen bg-gray-900 p-8 flex flex-col items-center">
+    <div :class="`p-8 flex flex-col items-center bg-gradient-to-br text-white ${bgClass} rounded-xl`">
       <h1 class="text-3xl font-bold mb-6">Consulta del Clima</h1>
 
     <input
       v-model="city"
-      @keyup.enter="fetchWeather"
+      @keyup.enter="searchClick"
       type="text"
       placeholder="Ingresa una ciudad..."
-      class="p-2 rounded shadow w-64 mb-6"
+      class="p-2 placeholder:text-white border rounded shadow w-64 mb-6"
     />
 
-    <p class="text-xl mb-6 text-center ">Ejemplo: Madrid, ES</p>
+    <p class="text-2xs mb-6 text-center ">Ejemplo: Madrid, ES</p>
 
-    <button @click="fetchWeather" class="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600">
+    <button @click="searchClick" class=" border bg-blue-700 text-white px-4 py-2 rounded shadow transition-all hover:scale-110">
       Buscar
     </button>
 
-    <div v-if="weather" class="mt-6 bg-white p-4 rounded shadow text-center w-64">
+    <div v-if="weather" class="capitalize mt-6 bg-white text-black p-4 rounded shadow text-center w-64">
       <h2 class="text-xl font-semibold mb-2">{{ weather.name }} {{ weather.sys.country }}</h2>
+      <img :src="imagen.url" :alt="imagen.alt">
       <p>Temperatura: {{ weather.main.temp }}°C</p>
       <p>Longitud: {{ weather.coord.lon }}</p>
       <p>Latitud: {{ weather.coord.lat }}</p>
@@ -33,8 +34,11 @@
   />
     </div>
 
-    <div v-if="error" class="text-red-600 mt-4">
-      {{ error }}
+    <div v-if="error1" class="text-red-600 mt-4">
+      {{ error1 }}
+    </div>
+    <div v-if="error2" class="text-red-600 mt-4">
+      {{ error2 }}
     </div>
     </div>
     
@@ -45,31 +49,50 @@
 import { ref, computed } from 'vue'
 const city = ref('')
 const weather = ref(null)
-const error = ref('')
+const imagen = ref(null)
+const error1 = ref('')
+const error2 = ref('')
 
 const fetchWeather = async () => {
-  error.value = ''
+  error1.value = ''
   try {
     const res = await fetch(`http://localhost:3000/api/weather/${city.value}`)
-    if (!res.ok) throw new Error('Ciudad no encontrada')
+    if (!res.ok) throw new Error('Clima de la ciudad no encontrado')
     weather.value = await res.json()
   } catch (err) {
-    error.value = err.message
+    error1.value = err.message
   }
 }
 
+const fetchCity = async () => {
+  error2.value = ''
+  try {
+    const res = await fetch(`http://localhost:3000/api/city/${city.value}`)
+    if (!res.ok) throw new Error('Imagen de la ciudad no encontrada')
+    imagen.value = await res.json()
+
+  } catch (err) {
+    error2.value = err.message
+  }
+}
+
+const searchClick = ()=>{
+  console.log("Boton presionao", city.value)
+  fetchCity()
+  fetchWeather()
+}
 const bgClass = computed(() => {
-  if (!weather.value) return 'from-blue-200 to-blue-500'
+  if (!weather.value) return 'bg-blue-800'
   const icon = weather.value.weather[0].icon
 
-  if (icon.startsWith('01')) return 'from-yellow-200 to-yellow-500'
-  if (icon.startsWith('02') || icon.startsWith('03') || icon.startsWith('04')) return 'from-gray-300 to-gray-500'
-  if (icon.startsWith('09') || icon.startsWith('10')) return 'from-blue-400 to-blue-600'
-  if (icon.startsWith('11')) return 'from-indigo-800 to-indigo-900'
-  if (icon.startsWith('13')) return 'from-white to-blue-100'
-  if (icon.startsWith('50')) return 'from-gray-200 to-gray-400'
+  if (icon.startsWith('01')) return 'bg-yellow-700'
+  if (icon.startsWith('02') || icon.startsWith('03') || icon.startsWith('04')) return 'bg-gray-600'
+  if (icon.startsWith('09') || icon.startsWith('10')) return 'bg-blue-600'
+  if (icon.startsWith('11')) return 'bg-indigo-900'
+  if (icon.startsWith('13')) return 'bg-blue-500'
+  if (icon.startsWith('50')) return 'bg-gray-500'
 
-  return 'from-blue-200 to-blue-500'
+  return 'bg-blue-800'
 })
 
 
