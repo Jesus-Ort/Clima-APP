@@ -52,7 +52,10 @@ const weather = ref(null)
 const imagen = ref(null)
 const error1 = ref('')
 const error2 = ref('')
-const API_RENDER=import.meta.env.VITE_BACKEND_URL
+const API_RENDER =
+  import.meta.env.MODE === 'development'
+    ? import.meta.env.VITE_BACKEND_URL
+    : '';
 
 const fetchWeather = async () => {
   error1.value = ''
@@ -82,6 +85,7 @@ const searchClick = ()=>{
   fetchCity()
   fetchWeather()
 }
+
 const bgClass = computed(() => {
   if (!weather.value) return 'bg-blue-800'
   const icon = weather.value.weather[0].icon
