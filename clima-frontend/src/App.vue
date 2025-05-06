@@ -81,7 +81,6 @@ const fetchCity = async () => {
 }
 
 const searchClick = ()=>{
-  console.log("Boton presionao", city.value)
   fetchCity()
   fetchWeather()
 }
